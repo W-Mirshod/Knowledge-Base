@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8005:8000"
+    volumes:
+      - ./app:/app/app:Z
+      - ./static:/app/static:Z
+      - ./templates:/app/templates:Z
+      - ./data:/app/data:Z
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+    restart: unless-stopped

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Knowledge Base</title>
+    
+    <!-- Meta Description -->
+    <meta name="description" content="Organize your notes, ideas, and knowledge in one place">
+    
+    <!-- Open Graph / Facebook / Telegram -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="📚 Knowledge Base">
+    <meta property="og:description" content="Organize your notes, ideas, and knowledge in one place">
+    <meta property="og:image" content="/static/images/og-image.png">
+    <meta property="og:url" content="">
+    <meta property="og:site_name" content="Knowledge Base">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="📚 Knowledge Base">
+    <meta name="twitter:description" content="Organize your notes, ideas, and knowledge in one place">
+    <meta name="twitter:image" content="/static/images/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    <link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png">
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Knowledge Base</h1>
+            <p class="subtitle">Organize your notes, ideas, and knowledge</p>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search notes...">
+                <button id="search-btn">🔍</button>
+            </div>
+            <div id="stats-bar">
+                <span id="total-notes">0 notes</span> |
+                <span id="total-categories">0 categories</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="toolbar">
+                <button id="add-note-btn" class="primary-btn">✏️ New Note</button>
+                <button id="add-category-btn" class="secondary-btn">📁 New Category</button>
+                <select id="category-filter">
+                    <option value="all">All Categories</option>
+                </select>
+                <button id="show-favorites-btn" class="secondary-btn">⭐ Favorites</button>
+            </div>
+
+            <div id="note-form" class="form-container hidden">
+                <form id="create-note-form">
+                    <h3>Create New Note</h3>
+                    <div class="form-group">
+                        <input type="text" id="note-title" placeholder="Note title" required>
+                    </div>
+                    <div class="form-group">
+                        <select id="note-category">
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="note-content" rows="10" placeholder="Write your note content..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="note-tags" placeholder="Tags (comma-separated)">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary-btn">Save Note</button>
+                        <button type="button" onclick="hideNoteForm()" class="secondary-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="notes-container" class="notes-grid">
+                <div id="notes-loading" class="loading">Loading notes...</div>
+                <div id="notes-empty" class="empty-state hidden">
+                    <p>No notes yet. Create your first note!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Note Modal -->
+    <div id="note-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="note-modal-title"></h3>
+                <button onclick="closeNoteModal()" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="note-modal-content"></div>
+                <div id="note-modal-meta" class="note-meta"></div>
+                <div class="modal-actions">
+                    <button id="edit-note-btn" class="secondary-btn">Edit</button>
+                    <button id="favorite-note-btn" class="secondary-btn">⭐ Favorite</button>
+                    <button id="delete-note-btn" class="secondary-btn" style="background: #fee2e2; color: #ef4444;">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
