@@ -30,45 +30,119 @@
 </head>
 <body>
     <div class="container">
-        <header>
+        <header role="banner">
             <h1>📚 Knowledge Base</h1>
             <p class="subtitle">Organize your notes, ideas, and knowledge</p>
-            <div class="search-bar">
-                <input type="text" id="search-input" placeholder="Search notes...">
-                <button id="search-btn">🔍</button>
+            <div class="search-bar" role="search">
+                <label for="search-input" class="sr-only">Search notes</label>
+                <input 
+                    type="search" 
+                    id="search-input" 
+                    placeholder="Search notes..." 
+                    aria-label="Search notes"
+                    autocomplete="off"
+                >
+                <button 
+                    id="search-btn" 
+                    type="button"
+                    aria-label="Search"
+                    title="Search"
+                >🔍</button>
             </div>
-            <div id="stats-bar">
+            <div id="stats-bar" aria-live="polite" aria-atomic="true">
                 <span id="total-notes">0 notes</span> |
                 <span id="total-categories">0 categories</span>
             </div>
         </header>
 
-        <main>
-            <div class="toolbar">
-                <button id="add-note-btn" class="primary-btn">✏️ New Note</button>
-                <button id="add-category-btn" class="secondary-btn">📁 New Category</button>
-                <select id="category-filter">
+        <main role="main">
+            <div class="toolbar" role="toolbar" aria-label="Actions">
+                <button 
+                    id="add-note-btn" 
+                    class="primary-btn"
+                    aria-label="Create new note"
+                    title="Create new note"
+                >
+                    ✏️ <span>New Note</span>
+                </button>
+                <button 
+                    id="add-category-btn" 
+                    class="secondary-btn"
+                    aria-label="Create new category"
+                    title="Create new category"
+                >
+                    📁 <span>New Category</span>
+                </button>
+                <label for="category-filter" class="sr-only">Filter by category</label>
+                <select 
+                    id="category-filter"
+                    aria-label="Filter by category"
+                    title="Filter by category"
+                >
                     <option value="all">All Categories</option>
                 </select>
-                <button id="show-favorites-btn" class="secondary-btn">⭐ Favorites</button>
+                <button 
+                    id="show-favorites-btn" 
+                    class="secondary-btn"
+                    aria-label="Show favorite notes"
+                    title="Show favorite notes"
+                >
+                    ⭐ <span>Favorites</span>
+                </button>
             </div>
 
-            <div id="note-form" class="form-container hidden">
-                <form id="create-note-form">
-                    <h3>Create New Note</h3>
+            <div id="note-form" class="form-container hidden" role="dialog" aria-labelledby="note-form-title" aria-modal="true">
+                <form id="create-note-form" novalidate>
+                    <h3 id="note-form-title">Create New Note</h3>
                     <div class="form-group">
-                        <input type="text" id="note-title" placeholder="Note title" required>
+                        <label for="note-title">Title</label>
+                        <input 
+                            type="text" 
+                            id="note-title" 
+                            name="note-title"
+                            placeholder="Note title" 
+                            required
+                            aria-required="true"
+                            aria-describedby="note-title-error"
+                            autocomplete="off"
+                        >
+                        <span id="note-title-error" class="sr-only" role="alert" aria-live="polite"></span>
                     </div>
                     <div class="form-group">
-                        <select id="note-category">
+                        <label for="note-category">Category</label>
+                        <select 
+                            id="note-category"
+                            name="note-category"
+                            aria-label="Select category"
+                            required
+                            aria-required="true"
+                        >
                             <option value="general">General</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <textarea id="note-content" rows="10" placeholder="Write your note content..." required></textarea>
+                        <label for="note-content">Content</label>
+                        <textarea 
+                            id="note-content" 
+                            name="note-content"
+                            rows="10" 
+                            placeholder="Write your note content..." 
+                            required
+                            aria-required="true"
+                            aria-describedby="note-content-error"
+                        ></textarea>
+                        <span id="note-content-error" class="sr-only" role="alert" aria-live="polite"></span>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="note-tags" placeholder="Tags (comma-separated)">
+                        <label for="note-tags">Tags</label>
+                        <input 
+                            type="text" 
+                            id="note-tags" 
+                            name="note-tags"
+                            placeholder="Tags (comma-separated)" 
+                            aria-label="Tags (comma-separated)"
+                            autocomplete="off"
+                        >
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="primary-btn">Save Note</button>
@@ -77,33 +151,76 @@
                 </form>
             </div>
 
-            <div id="notes-container" class="notes-grid">
-                <div id="notes-loading" class="loading">Loading notes...</div>
-                <div id="notes-empty" class="empty-state hidden">
+            <div id="notes-container" class="notes-grid" role="region" aria-label="Notes" aria-live="polite">
+                <div id="notes-loading" class="loading" role="status" aria-live="polite">
+                    <span class="sr-only">Loading notes</span>
+                </div>
+                <div id="notes-empty" class="empty-state hidden" role="status">
                     <p>No notes yet. Create your first note!</p>
+                    <button 
+                        onclick="showNoteForm()" 
+                        class="primary-btn empty-action"
+                        aria-label="Create your first note"
+                    >
+                        Create Your First Note
+                    </button>
                 </div>
             </div>
         </main>
     </div>
 
     <!-- Note Modal -->
-    <div id="note-modal" class="modal hidden">
+    <div 
+        id="note-modal" 
+        class="modal hidden" 
+        role="dialog" 
+        aria-labelledby="note-modal-title" 
+        aria-modal="true"
+        aria-describedby="note-modal-content"
+    >
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="note-modal-title"></h3>
-                <button onclick="closeNoteModal()" class="close-btn">&times;</button>
+                <button 
+                    onclick="closeNoteModal()" 
+                    class="close-btn"
+                    aria-label="Close modal"
+                    title="Close"
+                >&times;</button>
             </div>
             <div class="modal-body">
-                <div id="note-modal-content"></div>
-                <div id="note-modal-meta" class="note-meta"></div>
+                <div id="note-modal-content" role="article"></div>
+                <div id="note-modal-meta" class="note-meta" aria-label="Note metadata"></div>
                 <div class="modal-actions">
-                    <button id="edit-note-btn" class="secondary-btn">Edit</button>
-                    <button id="favorite-note-btn" class="secondary-btn">⭐ Favorite</button>
-                    <button id="delete-note-btn" class="secondary-btn" style="background: #fee2e2; color: #ef4444;">Delete</button>
+                    <button 
+                        id="edit-note-btn" 
+                        class="secondary-btn"
+                        aria-label="Edit note"
+                    >
+                        ✏️ Edit
+                    </button>
+                    <button 
+                        id="favorite-note-btn" 
+                        class="secondary-btn"
+                        aria-label="Toggle favorite"
+                    >
+                        ⭐ <span id="favorite-btn-text">Favorite</span>
+                    </button>
+                    <button 
+                        id="delete-note-btn" 
+                        class="secondary-btn"
+                        style="background: #fee2e2; color: #ef4444;"
+                        aria-label="Delete note"
+                    >
+                        🗑️ Delete
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container" role="region" aria-live="polite" aria-atomic="false"></div>
 
     <script src="/static/js/app.js"></script>
 </body>

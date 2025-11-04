@@ -6,7 +6,7 @@ import re
 
 # Note CRUD
 def create_note(db: Session, note: schemas.NoteCreate):
-    db_note = models.Note(**note.dict())
+    db_note = models.Note(**note.model_dump())
     db.add(db_note)
     db.commit()
     db.refresh(db_note)
@@ -27,7 +27,8 @@ def get_favorite_notes(db: Session, skip: int = 0, limit: int = 100):
 def update_note(db: Session, note_id: int, note_update: schemas.NoteCreate):
     db_note = db.query(models.Note).filter(models.Note.id == note_id).first()
     if db_note:
-        for key, value in note_update.dict().items():
+        update_data = note_update.model_dump(exclude={'id', 'created_at', 'updated_at'})
+        for key, value in update_data.items():
             setattr(db_note, key, value)
         db.commit()
         db.refresh(db_note)
@@ -50,7 +51,7 @@ def toggle_favorite(db: Session, note_id: int):
 
 # Category CRUD
 def create_category(db: Session, category: schemas.CategoryCreate):
-    db_category = models.Category(**category.dict())
+    db_category = models.Category(**category.model_dump())
     db.add(db_category)
     db.commit()
     db.refresh(db_category)
@@ -62,7 +63,8 @@ def get_categories(db: Session):
 def update_category(db: Session, category_id: int, category_update: schemas.CategoryCreate):
     db_category = db.query(models.Category).filter(models.Category.id == category_id).first()
     if db_category:
-        for key, value in category_update.dict().items():
+        update_data = category_update.model_dump(exclude={'id', 'created_at'})
+        for key, value in update_data.items():
             setattr(db_category, key, value)
         db.commit()
         db.refresh(db_category)
@@ -81,12 +83,19 @@ def search_notes(db: Session, query: str, category: str = None, tags: str = None
     conditions = []
 
     for term in search_terms:
-        conditions.append(or_(
+        term_conditions = [
             models.Note.title.ilike(f'%{term}%'),
             models.Note.content.ilike(f'%{term}%'),
-            models.Note.summary.ilike(f'%{term}%'),
-            models.Note.tags.ilike(f'%{term}%')
-        ))
+            models.Note.summary.ilike(f'%{term}%')
+        ]
+        # Only search in tags if tags field exists
+        term_conditions.append(
+            and_(
+                models.Note.tags.isnot(None),
+                models.Note.tags.ilike(f'%{term}%')
+            )
+        )
+        conditions.append(or_(*term_conditions))
 
     search_query = db.query(models.Note).filter(and_(*conditions))
 
@@ -96,7 +105,12 @@ def search_notes(db: Session, query: str, category: str = None, tags: str = None
     if tags:
         tag_conditions = []
         for tag in tags.split(','):
-            tag_conditions.append(models.Note.tags.ilike(f'%{tag.strip()}%'))
+            tag_conditions.append(
+                and_(
+                    models.Note.tags.isnot(None),
+                    models.Note.tags.ilike(f'%{tag.strip()}%')
+                )
+            )
         search_query = search_query.filter(or_(*tag_conditions))
 
     results = search_query.order_by(models.Note.updated_at.desc()).all()

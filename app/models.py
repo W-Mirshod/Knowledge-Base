@@ -15,7 +15,7 @@ class Note(Base):
     is_favorite = Column(Boolean, default=False)
     is_public = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
 class Category(Base):
     __tablename__ = "categories"
